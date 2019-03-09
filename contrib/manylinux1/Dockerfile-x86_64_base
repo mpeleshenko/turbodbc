@@ -1,0 +1,20 @@
+FROM quay.io/pypa/manylinux1_x86_64:latest
+
+# Install dependencies
+RUN yum install -y xz ccache wget && yum clean all
+
+ADD scripts/build_boost.sh /
+RUN /build_boost.sh
+
+# Install cmake manylinux1 package
+ADD scripts/install_cmake.sh /
+RUN /install_cmake.sh
+
+ADD scripts/build_ccache.sh /
+RUN /build_ccache.sh
+
+WORKDIR /
+RUN git clone https://github.com/matthew-brett/multibuild.git && cd multibuild && git checkout ffe59955ad8690c2f8bb74766cb7e9b0d0ee3963
+
+ADD scripts/build_virtualenvs.sh /
+RUN /build_virtualenvs.sh
